@@ -654,6 +654,7 @@
 
         var todasLasCategorias=["playas","naturaleza","vida_nocturna","cultura","gastronomia","entretenimiento","compras","parques"];
         var userLat=null,userLng=null,userProvincia=null,categoriasSeleccionadas=[],radioMaxKm=0,pasoActual=1,lugaresFiltrados=[],listaRevelada=false,textInterval=null,textTimeout=null,gpsWatchId=null;
+        var _ultimaBusqueda=0,RATE_LIMIT_MS=8000;
         var lugaresCR={"San José":{coords:{lat:9.9281,lng:-84.0907},cantones:["San José","Escazú","Desamparados","Puriscal","Tarrazú","Asserrí","Mora","Goicoechea","Santa Ana","Alajuelita","Vásquez de Coronado","Acosta","Tibás","Moravia","Montes de Oca","Turrubares","Dota","Curridabat","Pérez Zeledón","León Cortés Castro"]},"Alajuela":{coords:{lat:10.0160,lng:-84.2119},cantones:["Alajuela","San Ramón","Grecia","San Mateo","Atenas","Naranjo","Palmares","Poás","Orotina","San Carlos","Zarcero","Valverde Vega","Upala","Los Chiles","Guatuso","Río Cuarto"]},"Cartago":{coords:{lat:9.8633,lng:-83.9194},cantones:["Cartago","Paraíso","La Unión","Jiménez","Turrialba","Alvarado","Oreamuno","El Guarco"]},"Heredia":{coords:{lat:10.0030,lng:-84.1170},cantones:["Heredia","Barva","Santo Domingo","Santa Bárbara","San Rafael","San Isidro","Belén","Flores","San Pablo","Sarapiquí"]},"Guanacaste":{coords:{lat:10.6307,lng:-85.4432},cantones:["Liberia","Nicoya","Santa Cruz","Bagaces","Carrillo","Cañas","Abangares","Tilarán","Nandayure","La Cruz","Hojancha"]},"Puntarenas":{coords:{lat:9.9779,lng:-84.8341},cantones:["Puntarenas","Esparza","Buenos Aires","Montes de Oro","Osa","Aguirre","Golfito","Coto Brus","Parrita","Corredores","Garabito"]},"Limón":{coords:{lat:9.9904,lng:-83.0360},cantones:["Limón","Pococí","Siquirres","Talamanca","Matina","Guácimo"]}};
         var gamProvincias=["San José","Alajuela","Cartago","Heredia"];
 
@@ -683,6 +684,15 @@
 
         function buscarLugares(){
             if(radioMaxKm===0)return;
+            var ahora=Date.now();
+            if(ahora-_ultimaBusqueda<RATE_LIMIT_MS){
+                var seg=Math.ceil((RATE_LIMIT_MS-(ahora-_ultimaBusqueda))/1000);
+                var btnT=document.getElementById('btn-transporte');
+                btnT.textContent='⏳ '+seg+'s...';
+                setTimeout(function(){btnT.textContent=t('btn_buscar');},1500);
+                return;
+            }
+            _ultimaBusqueda=ahora;
             var btnT=document.getElementById('btn-transporte');
             btnT.disabled=true;
             btnT.textContent=t('btn_buscando');
