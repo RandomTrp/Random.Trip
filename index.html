@@ -405,9 +405,46 @@
             .onb-dots { gap: 10px; }
         }
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+
+        /* ── Instagram Browser Banner ── */
+        #ig-banner {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 9999;
+            background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+            color: white;
+            padding: 14px 16px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        #ig-banner strong { display: block; font-size: 15px; margin-bottom: 4px; }
+        #ig-banner .ig-steps { margin-top: 8px; font-size: 13px; opacity: 0.95; }
+        #ig-banner .ig-open-btn {
+            display: inline-block;
+            margin-top: 10px;
+            background: white;
+            color: #833ab4;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+        body.has-ig-banner { padding-top: 140px; }
     </style>
 </head>
 <body>
+    <div id="ig-banner">
+        <strong>🔒 El GPS no funciona en Instagram</strong>
+        <div class="ig-steps" id="ig-steps-text"></div>
+        <button class="ig-open-btn" id="ig-open-btn" onclick="abrirEnNavegador()">Abrir en el navegador ↗</button>
+    </div>
+
     <div class="bg-slideshow">
         <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&w=1400&q=80')"></div>
         <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80')"></div>
@@ -791,6 +828,44 @@
             gtag('event','ver_lugar',{nombre:getField(l,'nombre'),categoria:l.categoria,provincia:l.provincia,canton:l.canton,distancia_km:l.distancia?l.distancia.toFixed(1):''});
             mostrarPaso(5);
         }
+
+        // ── Instagram Browser Detection ──
+        function detectarIGBrowser() {
+            var ua = navigator.userAgent || '';
+            if (ua.indexOf('Instagram') === -1) return;
+
+            var banner = document.getElementById('ig-banner');
+            var stepsText = document.getElementById('ig-steps-text');
+            var isAndroid = /Android/.test(ua);
+            var isIOS = /iPhone|iPad|iPod/.test(ua);
+
+            if (isAndroid) {
+                stepsText.textContent = 'Toca el botón para abrirla en tu navegador y usar el GPS.';
+            } else if (isIOS) {
+                stepsText.innerHTML = 'Toca ··· arriba a la derecha → "Abrir en Safari" o "Abrir en navegador".';
+                document.getElementById('ig-open-btn').style.display = 'none';
+            } else {
+                stepsText.textContent = 'Abre esta página en tu navegador para usar el GPS.';
+            }
+
+            banner.style.display = 'block';
+            document.body.classList.add('has-ig-banner');
+        }
+
+        function abrirEnNavegador() {
+            var url = window.location.href;
+            var ua = navigator.userAgent || '';
+            if (/Android/.test(ua)) {
+                // intent:// forces Android to open in the default browser
+                var intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
+                window.location.href = intentUrl;
+            } else {
+                // Fallback: try to open in new tab (works on some browsers)
+                window.open(url, '_blank');
+            }
+        }
+
+        detectarIGBrowser();
     </script>
 </body>
 </html>
