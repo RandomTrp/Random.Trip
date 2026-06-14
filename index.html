@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Random.trip — Costa Rica</title>
 
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2H5WLL5HFQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag("js", new Date());
+        gtag("config", "G-2H5WLL5HFQ");
+    </script>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
@@ -675,7 +684,7 @@
         function guardarUbicacionManual(){var p=document.getElementById('select-provincia').value;userProvincia=p;userLat=lugaresCR[p].coords.lat;userLng=lugaresCR[p].coords.lng;mostrarPaso(2);}
 
         var botonesCategoria=document.querySelectorAll('.cat-btn'),btnContinuarCat=document.getElementById('btn-categorias');
-        botonesCategoria.forEach(function(btn){btn.addEventListener('click',function(){var c=btn.dataset.cat;if(c==='aleatorio'){botonesCategoria.forEach(function(b){if(b.dataset.cat!=='aleatorio')b.classList.remove('seleccionada');});categoriasSeleccionadas=['aleatorio'];btn.classList.add('seleccionada');}else{var ba=document.querySelector('.btn-aleatorio');if(ba.classList.contains('seleccionada')){ba.classList.remove('seleccionada');categoriasSeleccionadas=categoriasSeleccionadas.filter(function(x){return x!=='aleatorio';});}btn.classList.toggle('seleccionada');if(categoriasSeleccionadas.includes(c))categoriasSeleccionadas=categoriasSeleccionadas.filter(function(x){return x!==c;});else categoriasSeleccionadas.push(c);}btnContinuarCat.disabled=categoriasSeleccionadas.length===0;});});
+        botonesCategoria.forEach(function(btn){btn.addEventListener('click',function(){var c=btn.dataset.cat;if(c==='aleatorio'){botonesCategoria.forEach(function(b){if(b.dataset.cat!=='aleatorio')b.classList.remove('seleccionada');});categoriasSeleccionadas=['aleatorio'];btn.classList.add('seleccionada');}else{var ba=document.querySelector('.btn-aleatorio');if(ba.classList.contains('seleccionada')){ba.classList.remove('seleccionada');categoriasSeleccionadas=categoriasSeleccionadas.filter(function(x){return x!=='aleatorio';});}btn.classList.toggle('seleccionada');if(categoriasSeleccionadas.includes(c))categoriasSeleccionadas=categoriasSeleccionadas.filter(function(x){return x!==c;});else{categoriasSeleccionadas.push(c);gtag('event','seleccion_categoria',{categoria:c});}}btnContinuarCat.disabled=categoriasSeleccionadas.length===0;});});
         function guardarCategorias(){if(categoriasSeleccionadas.length>0)mostrarPaso(3);}
 
         function validarTren(){var b=document.getElementById('btn-tren'),a=document.getElementById('alerta-tren');if(!gamProvincias.includes(userProvincia)&&userProvincia!=="GPS"){b.classList.add('deshabilitado');b.onclick=null;a.style.display="block";}else{b.classList.remove('deshabilitado');b.onclick=function(){seleccionarTransporte(this);};a.style.display="none";}}
@@ -693,6 +702,9 @@
                 return;
             }
             _ultimaBusqueda=ahora;
+            // Analytics: track search
+            var selTrans=document.querySelector('.trans-btn.seleccionado');
+            gtag('event','busqueda',{provincia:userProvincia||'GPS',transporte:selTrans?selTrans.dataset.label:'',categorias:categoriasSeleccionadas.join(','),radio_km:radioMaxKm});
             var btnT=document.getElementById('btn-transporte');
             btnT.disabled=true;
             btnT.textContent=t('btn_buscando');
@@ -776,7 +788,8 @@
             // ─────────────────────────────────────────────────────────────
             document.getElementById('btn-waze').href = wazeUrl;
 
-            mostrarPaso(5); 
+            gtag('event','ver_lugar',{nombre:getField(l,'nombre'),categoria:l.categoria,provincia:l.provincia,canton:l.canton,distancia_km:l.distancia?l.distancia.toFixed(1):''});
+            mostrarPaso(5);
         }
     </script>
 </body>
