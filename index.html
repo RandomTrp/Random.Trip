@@ -315,7 +315,6 @@
         .dist-name { font-size: 14px; font-weight: 700; }
         .dist-km { font-size: 11px; color: var(--muted); font-weight: 500; margin-top: -4px; }
         .dist-btn.seleccionado .dist-km { color: var(--accent-dark); }
-        .dist-btn-full { grid-column: span 2; }
 
         .cat-btn { background: rgba(255,255,255,0.92); border: 2px solid var(--border-solid); border-radius: 16px; padding: 18px 10px 14px; color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; position: relative; overflow: hidden; font-family: inherit; }
         .cat-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; transition: opacity 0.25s ease; opacity: 0; }
@@ -553,6 +552,28 @@
         <div class="lang-footer">Random.trip</div>
     </div>
 
+    <!-- Script para saltear pantalla de idioma si ya fue elegido -->
+    <script>
+        (function(){
+            var storedLang = localStorage.getItem('lang');
+            if (storedLang && (storedLang === 'es' || storedLang === 'en')) {
+                // Idioma guardado, ocultar pantalla de idioma inmediatamente
+                document.getElementById('lang-screen').style.display = 'none';
+                // Establecer idioma y continuar
+                window.currentLang = storedLang;
+                // Aplicar traducciones cuando el DOM esté listo
+                document.addEventListener('DOMContentLoaded', function(){
+                    applyTranslations();
+                    if (_isMetaWebView) {
+                        document.getElementById('meta-gate').classList.add('active');
+                    } else {
+                        showSplash();
+                    }
+                });
+            }
+        })();
+    </script>
+
     <div id="splash" class="splash">
         <div class="splash-bg"></div><div class="splash-overlay"></div>
         <div id="splash-particles" class="splash-particles"></div>
@@ -630,7 +651,7 @@
             <button id="btn-categorias" class="btn-primario" disabled onclick="guardarCategorias()" data-i18n="btn_continuar">Continuar</button>
         </div>
 
-        <!-- Paso 3: Distancia (sin transporte) -->
+        <!-- Paso 3: Distancia (botones ahora todos uniformes, sin rectángulo) -->
         <div id="paso-3" class="pantalla">
             <div class="step-indicator" data-i18n="step_3_of_4">Paso 3 de 4</div>
             <h1 data-i18n="paso3_title">¿Qué tan lejos querés ir?</h1>
@@ -661,7 +682,8 @@
                     <span class="dist-name" data-i18n="dist_lejos">Lejos</span>
                     <span class="dist-km">80 km</span>
                 </button>
-                <button class="dist-btn dist-btn-full" data-radio="9999" onclick="seleccionarDistancia(this)">
+                <!-- "Todo el país" ahora es un cuadro normal, no un rectángulo -->
+                <button class="dist-btn" data-radio="9999" onclick="seleccionarDistancia(this)">
                     <span class="dist-icon">🌎</span>
                     <span class="dist-name" data-i18n="dist_sin_limite">Todo el país</span>
                     <span class="dist-km" data-i18n="dist_sin_limite_label">Sin límite</span>
@@ -697,7 +719,7 @@
     </div>
 
     <script>
-        var currentLang = 'es';
+        var currentLang = 'es'; // valor inicial, puede ser sobrescrito por el script de arriba
         var i18n = {
             es: {
                 lang_title:"Elige tu idioma",lang_subtitle:"Para comenzar tu aventura",splash_tagline:"Tu próxima aventura en Costa Rica comienza aquí",
@@ -815,6 +837,8 @@
             langSelected=true;
             currentLang=lang;
             document.documentElement.lang=lang==='es'?'es':'en';
+            // Guardar preferencia en localStorage
+            localStorage.setItem('lang', lang);
             document.querySelectorAll('.lang-card').forEach(function(c){
                 if(c===cardEl)c.classList.add('selected');
                 else c.classList.add('dimmed');
