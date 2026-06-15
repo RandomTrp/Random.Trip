@@ -898,16 +898,7 @@
         function resetearTexto(){if(textInterval)clearInterval(textInterval);if(textTimeout)clearTimeout(textTimeout);document.getElementById('text-box').classList.remove('active');var s=document.getElementById('scan-text'),r=document.getElementById('result-text');s.textContent=t('scan_waiting');s.style.opacity="1";s.style.filter="blur(0px)";r.classList.remove('show');r.textContent="";document.getElementById('btn-random').disabled=false;document.getElementById('btn-random').textContent=t('btn_sorprendeme');}
         function iniciarAnimacionTexto(){if(lugaresFiltrados.length===0)return;if(textInterval)clearInterval(textInterval);if(textTimeout)clearTimeout(textTimeout);var box=document.getElementById('text-box'),scan=document.getElementById('scan-text'),res=document.getElementById('result-text'),btn=document.getElementById('btn-random');btn.disabled=true;btn.textContent=t('btn_analizando');box.classList.add('active');res.classList.remove('show');res.textContent="";scan.style.opacity="1";scan.style.filter="blur(0px)";var frases=[t('scan_1'),t('scan_2'),t('scan_3'),t('scan_4'),t('scan_5'),t('scan_6')],idx=0;textInterval=setInterval(function(){if(idx<frases.length){scan.textContent=frases[idx];scan.style.opacity="0";scan.style.filter="blur(4px)";setTimeout(function(){scan.style.opacity="1";scan.style.filter="blur(0px)";},100);idx++;}else{clearInterval(textInterval);scan.style.opacity="0";var g=lugaresFiltrados[Math.floor(Math.random()*lugaresFiltrados.length)];textTimeout=setTimeout(function(){res.textContent=getField(g,'nombre');res.classList.add('show');textTimeout=setTimeout(function(){mostrarFicha(g);},1800);},300);}},650);}
 
-        // ── Meta WebView Detection ──────────────────────────────────────
-        (function() {
-            var ua = navigator.userAgent || '';
-            var isMetaWebView = /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS|FacebookLite|Threads|WhatsApp/.test(ua);
-            if (!isMetaWebView) return;
-            var gate = document.getElementById('meta-gate');
-            if (gate) gate.classList.add('active');
-        })();
-
-        function metaGateOpenBrowser() {
+        function mostrarFicha(l) {
             var url = window.location.href;
             var ua = navigator.userAgent || '';
             var opened = false;
