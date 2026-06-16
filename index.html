@@ -22,20 +22,20 @@
         /* ─── TOKENS ─── */
         :root {
             --bg:        #050f0a;
-            --surface-0: rgba(255,255,255,0.04);
-            --surface-1: rgba(255,255,255,0.08);
-            --surface-2: rgba(255,255,255,0.13);
-            --border-0:  rgba(255,255,255,0.06);
-            --border-1:  rgba(255,255,255,0.12);
-            --border-2:  rgba(255,255,255,0.22);
+            --surface-0: rgba(5,15,10,0.55);
+            --surface-1: rgba(5,15,10,0.70);
+            --surface-2: rgba(5,15,10,0.82);
+            --border-0:  rgba(255,255,255,0.10);
+            --border-1:  rgba(255,255,255,0.18);
+            --border-2:  rgba(255,255,255,0.28);
             --accent:    #00c896;
             --accent-dim:#00a67a;
             --accent-xd: #007a5a;
             --accent-bg: rgba(0,200,150,0.08);
             --accent-glow: rgba(0,200,150,0.25);
             --text-hi:   #ffffff;
-            --text-md:   rgba(255,255,255,0.65);
-            --text-lo:   rgba(255,255,255,0.35);
+            --text-md:   rgba(255,255,255,0.82);
+            --text-lo:   rgba(255,255,255,0.55);
             --text-dark: #0e1f18;
             --danger:    #f05252;
             --danger-bg: rgba(240,82,82,0.08);
@@ -403,6 +403,9 @@
             animation: stepIn 0.32s cubic-bezier(0.22,1,0.36,1);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            background: rgba(5,15,10,0.45);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
         }
         .pantalla.activa { display: block; }
         @keyframes stepIn {
@@ -420,7 +423,7 @@
             line-height: 1.2; color: var(--text-hi); margin-bottom: 8px;
         }
         .step-sub {
-            font-size: 14px; font-weight: 400; color: var(--text-md);
+            font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75);
             line-height: 1.55; margin-bottom: 28px;
         }
 
@@ -659,10 +662,10 @@
         }
         .dist-btn.seleccionado::before { opacity: 1; }
         .dist-emoji { font-size: 26px; line-height: 1; }
-        .dist-label { font-size: 11px; font-weight: 700; color: var(--text-md); }
+        .dist-label { font-size: 11px; font-weight: 800; color: #fff; letter-spacing: 0.1px; }
         .dist-btn.seleccionado .dist-label { color: var(--accent); }
-        .dist-km { font-size: 10px; color: var(--text-lo); font-weight: 500; }
-        .dist-btn.seleccionado .dist-km { color: var(--accent); opacity: 0.7; }
+        .dist-km { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 600; }
+        .dist-btn.seleccionado .dist-km { color: var(--accent); opacity: 0.85; }
 
         /* ─── RESULTS TABS ─── */
         .tabs {
