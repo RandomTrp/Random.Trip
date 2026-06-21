@@ -1678,6 +1678,44 @@ function iniciarAnimacionTexto(){
     },550);
 }
 
+function mostrarFicha(l){
+    try{
+        document.getElementById('ficha-categoria').textContent=translateCat(l.categoria);
+        document.getElementById('ficha-nombre').textContent=getField(l,'nombre');
+        document.getElementById('ficha-referencia').textContent=getField(l,'referencia');
+        document.getElementById('ficha-horario').textContent=l.horario;
+        document.getElementById('ficha-costo').textContent=l.costo;
+        var costoStr=(l.costo||'').toString().toLowerCase();
+        var esGratis=(costoStr==='gratis'||costoStr==='free'||costoStr==='0'||costoStr.includes('gratuito'));
+        var modoCompraDiv=document.getElementById('ficha-modo-compra');
+        if(!esGratis){
+            var modoCompraTexto=getField(l,'modo_compra');
+            if(!modoCompraTexto||modoCompraTexto.trim()===''){modoCompraTexto=(currentLang==='es')?i18n.es.modo_compra_default:i18n.en.modo_compra_default_en;}
+            modoCompraDiv.innerHTML='<span style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>'+modoCompraTexto+'</span>';
+            modoCompraDiv.style.display='block';
+        }else{modoCompraDiv.style.display='none';}
+        var ul=document.getElementById('ficha-actividades');ul.innerHTML='';
+        var acts=getField(l,'actividades');
+        if(Array.isArray(acts))acts.forEach(function(a){var li=document.createElement('li');li.textContent=a;ul.appendChild(li);});
+        var nombreLugar=getField(l,'nombre')||'';
+        var queryDestino=encodeURIComponent(nombreLugar+', '+(l.canton||'')+', '+(l.provincia||'')+', Costa Rica');
+        var mapsUrl;
+        if(userLat&&userLng){mapsUrl='https://www.google.com/maps/dir/'+userLat+','+userLng+'/'+queryDestino;}
+        else{mapsUrl='https://www.google.com/maps/search/?api=1&query='+queryDestino;}
+        document.getElementById('btn-maps').href=mapsUrl;
+        var wazeDest=encodeURIComponent(nombreLugar+', '+(l.canton||'')+', Costa Rica');
+        document.getElementById('btn-waze').href='https://waze.com/ul?q='+wazeDest+'&navigate=yes';
+        gtag('event','ver_lugar',{nombre:getField(l,'nombre'),categoria:l.categoria,provincia:l.provincia,canton:l.canton,distancia_km:l.distancia?l.distancia.toFixed(1):''});
+        mostrarPaso(5);
+    }catch(err){
+        console.error('Error en mostrarFicha:',err,l);
+        resetearTexto();
+        listaRevelada=false;
+        document.getElementById('btn-revelar').style.display='flex';
+        alert((currentLang==='es'?'Hubo un problema al cargar este lugar. Probá con otro.\n\nDetalle: ':'There was a problem loading this place. Try another one.\n\nDetail: ')+err.message);
+    }
+}
+
 /* ════════════════════════════════════════════════════════════
    META WEBVIEW: Instagram → Random.trip → Detectar plataforma → Mostrar instrucciones
    ════════════════════════════════════════════════════════════ */
