@@ -892,6 +892,47 @@
         .meta-copy-btn svg { width: 14px; height: 14px; }
         .meta-hint { margin-top: 24px; font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--text-lo); }
 
+        /* ── Vistas dinámicas del gate (Android vs iOS) ── */
+        .meta-view { width: 100%; }
+
+        .ios-steps {
+            width: 100%;
+            display: flex; flex-direction: column; gap: 14px;
+            margin-top: 4px; margin-bottom: 8px;
+        }
+        .ios-step {
+            display: flex; align-items: flex-start; gap: 14px;
+            background: var(--surface-0); border: 1px solid var(--border-0);
+            border-radius: var(--r-md); padding: 14px 16px; text-align: left;
+        }
+        .ios-step-num {
+            width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
+            background: rgba(0,200,150,0.12); border: 1px solid rgba(0,200,150,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 800; color: var(--accent); margin-top: 1px;
+        }
+        .ios-step-text { display: flex; flex-direction: column; gap: 2px; }
+        .ios-step-text strong { font-size: 14px; color: var(--text-hi); font-weight: 700; line-height: 1.4; }
+        .ios-step-sub { font-size: 12px; color: var(--text-lo); font-weight: 400; }
+        .ios-dots-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: rgba(0,200,150,0.15); color: var(--accent);
+            padding: 1px 7px; border-radius: 6px; font-weight: 800;
+            letter-spacing: 1px; font-size: 13px;
+        }
+
+        /* Flecha animada apuntando hacia arriba-derecha, donde está el botón ••• del navegador */
+        .ios-arrow-pointer {
+            position: fixed; top: 14px; right: 18px; z-index: 100000;
+            display: none; pointer-events: none;
+        }
+        .ios-arrow-pointer.show { display: block; animation: arrowBounce 1.4s ease-in-out infinite; }
+        .ios-arrow-pointer svg { width: 34px; height: 34px; stroke: var(--accent); filter: drop-shadow(0 2px 8px rgba(0,200,150,0.5)); }
+        @keyframes arrowBounce {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            50%      { transform: translateY(6px) rotate(0deg); }
+        }
+
         .toast {
             position: fixed; bottom: 28px; left: 50%;
             transform: translateX(-50%) translateY(60px);
@@ -929,37 +970,87 @@
     <div class="meta-gate-bg"></div>
     <div class="meta-gate-content">
         <div class="meta-gate-logo">Random<span class="dot">.</span>trip</div>
-        <div class="meta-gate-icon">
+
+        <div class="meta-gate-icon" id="meta-gate-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
                 <circle cx="12" cy="10" r="3"/>
             </svg>
         </div>
-        <div class="meta-bilingual">
-            <div class="meta-lang-block">
-                <div class="meta-lang-tag">Español</div>
-                <div class="meta-lang-title">Abrí en tu navegador para usar el GPS</div>
-                <div class="meta-lang-desc">El navegador interno de <strong>Instagram / Facebook</strong> no permite ubicación. Abrila en <strong>Chrome o Safari</strong>.</div>
+
+        <!-- ── Vista ANDROID: botón con intent automático ── -->
+        <div id="meta-view-android" class="meta-view" style="display:none;">
+            <div class="meta-bilingual">
+                <div class="meta-lang-block">
+                    <div class="meta-lang-tag">Español</div>
+                    <div class="meta-lang-title">Abrí en tu navegador para usar el GPS</div>
+                    <div class="meta-lang-desc">El navegador interno de <strong>Instagram</strong> no permite ubicación. Tocá el botón para abrir en <strong>Chrome</strong>.</div>
+                </div>
+                <div class="meta-lang-block">
+                    <div class="meta-lang-tag">English</div>
+                    <div class="meta-lang-title">Open in your browser to use GPS</div>
+                    <div class="meta-lang-desc"><strong>Instagram's</strong> built-in browser doesn't allow location. Tap the button to open in <strong>Chrome</strong>.</div>
+                </div>
             </div>
-            <div class="meta-lang-block">
-                <div class="meta-lang-tag">English</div>
-                <div class="meta-lang-title">Open in your browser to use GPS</div>
-                <div class="meta-lang-desc"><strong>Instagram / Facebook's</strong> built-in browser doesn't allow location. Open in <strong>Chrome or Safari</strong>.</div>
-            </div>
+            <button class="btn-primary meta-gate-btn" onclick="metaGateOpenAndroid()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                Abrir en Chrome · Open in Chrome
+            </button>
+            <button class="meta-copy-btn" onclick="metaGateCopyUrl()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copiar enlace · Copy link
+            </button>
         </div>
-        <button class="btn-primary meta-gate-btn" onclick="metaGateOpenBrowser()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-            Abrir en navegador · Open in browser
-        </button>
-        <button class="meta-copy-btn" onclick="metaGateCopyUrl()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            Copiar enlace · Copy link
-        </button>
+
+        <!-- ── Vista iOS: instrucciones directas (no existe forma de auto-abrir Safari) ── -->
+        <div id="meta-view-ios" class="meta-view" style="display:none;">
+            <div class="meta-bilingual">
+                <div class="meta-lang-block">
+                    <div class="meta-lang-tag">Español</div>
+                    <div class="meta-lang-title">Abrí esto en Safari para usar el GPS</div>
+                    <div class="meta-lang-desc">
+                        Instagram no permite abrir Safari automáticamente en iPhone. Seguí estos pasos:
+                    </div>
+                </div>
+                <div class="meta-lang-block">
+                    <div class="meta-lang-tag">English</div>
+                    <div class="meta-lang-title">Open this in Safari to use GPS</div>
+                    <div class="meta-lang-desc">
+                        Instagram doesn't allow auto-opening Safari on iPhone. Follow these steps:
+                    </div>
+                </div>
+            </div>
+
+            <div class="ios-steps">
+                <div class="ios-step">
+                    <div class="ios-step-num">1</div>
+                    <div class="ios-step-text">
+                        <strong>Tocá el botón <span class="ios-dots-icon">•••</span> arriba a la derecha</strong>
+                        <span class="ios-step-sub">Tap the <span class="ios-dots-icon">•••</span> button top right</span>
+                    </div>
+                </div>
+                <div class="ios-step">
+                    <div class="ios-step-num">2</div>
+                    <div class="ios-step-text">
+                        <strong>Elegí "Abrir en Safari"</strong>
+                        <span class="ios-step-sub">Choose "Open in Safari"</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="meta-copy-btn" onclick="metaGateCopyUrl()" style="margin-top:18px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copiar enlace por si lo necesitás · Copy link if needed
+            </button>
+        </div>
+
         <p class="meta-hint">Random.trip · Costa Rica</p>
     </div>
 </div>
@@ -1587,57 +1678,69 @@ function iniciarAnimacionTexto(){
     },550);
 }
 
-// Meta WebView detection
+/* ════════════════════════════════════════════════════════════
+   META WEBVIEW: Instagram → Random.trip → Detectar plataforma → Mostrar instrucciones
+   ════════════════════════════════════════════════════════════ */
 (function(){
-    var ua=navigator.userAgent||'';
-    var isMetaWebView=/Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS|FacebookLite|Threads|WhatsApp/.test(ua);
-    if(!isMetaWebView)return;
-    var gate=document.getElementById('meta-gate');
-    if(gate)gate.classList.add('active');
+    var ua = navigator.userAgent || '';
+    var isMetaWebView = /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS|FacebookLite|Threads|WhatsApp/.test(ua);
+    if(!isMetaWebView) return;
+
+    var isIOS = /iPhone|iPad|iPod/.test(ua);
+    var isAndroid = /Android/.test(ua);
+
+    var gate = document.getElementById('meta-gate');
+    if(!gate) return;
+    gate.classList.add('active');
+
+    if(isIOS){
+        // iOS: no existe ningún esquema de URL ni API capaz de forzar la apertura
+        // de Safari desde dentro del WebView de Instagram. Apple no expone un
+        // scheme invocable para Safari, y aunque existiera, Meta intercepta y
+        // bloquea salidas hacia otras apps desde su WebView por diseño.
+        // Por eso mostramos directamente las instrucciones del menú nativo "•••".
+        document.getElementById('meta-view-ios').style.display = 'block';
+
+        var arrow = document.createElement('div');
+        arrow.className = 'ios-arrow-pointer show';
+        arrow.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>';
+        document.body.appendChild(arrow);
+    } else if(isAndroid){
+        // Android: el intent SÍ es una API pública del sistema y Chrome la respeta.
+        document.getElementById('meta-view-android').style.display = 'block';
+    } else {
+        document.getElementById('meta-view-android').style.display = 'block';
+    }
 })();
 
-function metaGateOpenBrowser(){
-    var url=window.location.href,ua=navigator.userAgent||'';
-    if(/Android/.test(ua)){window.location.href='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;end';}
-    else if(/iPhone|iPad|iPod/.test(ua)){try{window.location.href=url.replace(/^https?:\/\//,'x-safari-https://');}catch(e){}}
-    setTimeout(function(){metaGateCopyUrl(true);},800);
+function metaGateOpenAndroid(){
+    var url = window.location.href;
+    var bareUrl = url.replace(/^https?:\/\//, '');
+    window.location.href = 'intent://' + bareUrl + '#Intent;scheme=https;package=com.android.chrome;end';
+    setTimeout(function(){ metaGateCopyUrl(); }, 800);
 }
-function metaGateCopyUrl(){
-    var url=window.location.href,toast=document.getElementById('meta-toast');
-    function showToast(){if(toast){toast.classList.add('show');setTimeout(function(){toast.classList.remove('show');},3000);}}
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(showToast).catch(function(){fallbackCopy(url,showToast);});}
-    else{fallbackCopy(url,showToast);}
-}
-function fallbackCopy(url,cb){var ta=document.createElement('textarea');ta.value=url;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');cb();}catch(e){}document.body.removeChild(ta);}
 
-function mostrarFicha(l){
-    document.getElementById('ficha-categoria').textContent=translateCat(l.categoria);
-    document.getElementById('ficha-nombre').textContent=getField(l,'nombre');
-    document.getElementById('ficha-referencia').textContent=getField(l,'referencia');
-    document.getElementById('ficha-horario').textContent=l.horario;
-    document.getElementById('ficha-costo').textContent=l.costo;
-    var costoStr=(l.costo||'').toLowerCase();
-    var esGratis=(costoStr==='gratis'||costoStr==='free'||costoStr==='0'||costoStr.includes('gratuito'));
-    var modoCompraDiv=document.getElementById('ficha-modo-compra');
-    if(!esGratis){
-        var modoCompraTexto=getField(l,'modo_compra');
-        if(!modoCompraTexto||modoCompraTexto.trim()===''){modoCompraTexto=(currentLang==='es')?i18n.es.modo_compra_default:i18n.en.modo_compra_default_en;}
-        modoCompraDiv.innerHTML='<span style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>'+modoCompraTexto+'</span>';
-        modoCompraDiv.style.display='block';
-    }else{modoCompraDiv.style.display='none';}
-    var ul=document.getElementById('ficha-actividades');ul.innerHTML='';
-    var acts=getField(l,'actividades');
-    if(Array.isArray(acts))acts.forEach(function(a){var li=document.createElement('li');li.textContent=a;ul.appendChild(li);});
-    var nombreLugar=getField(l,'nombre');
-    var queryDestino=encodeURIComponent(nombreLugar+', '+l.canton+', '+l.provincia+', Costa Rica');
-    var mapsUrl;
-    if(userLat&&userLng){mapsUrl='https://www.google.com/maps/dir/'+userLat+','+userLng+'/'+queryDestino;}
-    else{mapsUrl='https://www.google.com/maps/search/?api=1&query='+queryDestino;}
-    document.getElementById('btn-maps').href=mapsUrl;
-    var wazeDest=encodeURIComponent(nombreLugar+', '+l.canton+', Costa Rica');
-    document.getElementById('btn-waze').href='https://waze.com/ul?q='+wazeDest+'&navigate=yes';
-    gtag('event','ver_lugar',{nombre:getField(l,'nombre'),categoria:l.categoria,provincia:l.provincia,canton:l.canton,distancia_km:l.distancia?l.distancia.toFixed(1):''});
-    mostrarPaso(5);
+function metaGateCopyUrl(){
+    var url = window.location.href, toast = document.getElementById('meta-toast');
+    function showToast(){
+        if(toast){
+            toast.classList.add('show');
+            setTimeout(function(){ toast.classList.remove('show'); }, 3000);
+        }
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(showToast).catch(function(){ fallbackCopy(url, showToast); });
+    } else {
+        fallbackCopy(url, showToast);
+    }
+}
+
+function fallbackCopy(url, cb){
+    var ta = document.createElement('textarea');
+    ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); cb(); } catch(e){}
+    document.body.removeChild(ta);
 }
 </script>
 </body>
