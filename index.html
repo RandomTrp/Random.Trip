@@ -1474,6 +1474,94 @@ var userLat=null,userLng=null,userProvincia=null,categoriasSeleccionadas=[],radi
 var _ultimaBusqueda=0,RATE_LIMIT_MS=8000;
 var lugaresCR={"San José":{coords:{lat:9.9281,lng:-84.0907},cantones:["San José","Escazú","Desamparados","Puriscal","Tarrazú","Asserrí","Mora","Goicoechea","Santa Ana","Alajuelita","Vásquez de Coronado","Acosta","Tibás","Moravia","Montes de Oca","Turrubares","Dota","Curridabat","Pérez Zeledón","León Cortés Castro"]},"Alajuela":{coords:{lat:10.0160,lng:-84.2119},cantones:["Alajuela","San Ramón","Grecia","San Mateo","Atenas","Naranjo","Palmares","Poás","Orotina","San Carlos","Zarcero","Valverde Vega","Upala","Los Chiles","Guatuso","Río Cuarto"]},"Cartago":{coords:{lat:9.8633,lng:-83.9194},cantones:["Cartago","Paraíso","La Unión","Jiménez","Turrialba","Alvarado","Oreamuno","El Guarco"]},"Heredia":{coords:{lat:10.0030,lng:-84.1170},cantones:["Heredia","Barva","Santo Domingo","Santa Bárbara","San Rafael","San Isidro","Belén","Flores","San Pablo","Sarapiquí"]},"Guanacaste":{coords:{lat:10.6307,lng:-85.4432},cantones:["Liberia","Nicoya","Santa Cruz","Bagaces","Carrillo","Cañas","Abangares","Tilarán","Nandayure","La Cruz","Hojancha"]},"Puntarenas":{coords:{lat:9.9779,lng:-84.8341},cantones:["Puntarenas","Esparza","Buenos Aires","Montes de Oro","Osa","Aguirre","Golfito","Coto Brus","Parrita","Corredores","Garabito"]},"Limón":{coords:{lat:9.9904,lng:-83.0360},cantones:["Limón","Pococí","Siquirres","Talamanca","Matina","Guácimo"]}};
 
+/* ── Coordenadas por cantón (lat/lng de la cabecera de cada cantón) ──
+   Se usan en guardarUbicacionManual() para ubicar el GPS simulado en el
+   cantón elegido, en vez de siempre caer en el centro de la provincia. */
+var cantonesCR={
+"San José|San José":{lat:9.9325,lng:-84.0795},
+"San José|Escazú":{lat:9.9189,lng:-84.1387},
+"San José|Desamparados":{lat:9.8987,lng:-84.0664},
+"San José|Puriscal":{lat:9.8366,lng:-84.2986},
+"San José|Tarrazú":{lat:9.6486,lng:-84.0181},
+"San José|Asserrí":{lat:9.8581,lng:-84.0497},
+"San José|Mora":{lat:9.9483,lng:-84.2086},
+"San José|Goicoechea":{lat:9.9486,lng:-84.0444},
+"San José|Santa Ana":{lat:9.9281,lng:-84.1822},
+"San José|Alajuelita":{lat:9.8997,lng:-84.0958},
+"San José|Vásquez de Coronado":{lat:9.9836,lng:-83.9989},
+"San José|Acosta":{lat:9.7611,lng:-84.2231},
+"San José|Tibás":{lat:9.9550,lng:-84.0633},
+"San José|Moravia":{lat:9.9619,lng:-84.0489},
+"San José|Montes de Oca":{lat:9.9342,lng:-84.0481},
+"San José|Turrubares":{lat:9.8983,lng:-84.3494},
+"San José|Dota":{lat:9.6925,lng:-83.9089},
+"San José|Curridabat":{lat:9.9128,lng:-84.0317},
+"San José|Pérez Zeledón":{lat:9.3717,lng:-83.7042},
+"San José|León Cortés Castro":{lat:9.6694,lng:-84.0431},
+"Alajuela|Alajuela":{lat:10.0160,lng:-84.2119},
+"Alajuela|San Ramón":{lat:10.0925,lng:-84.4736},
+"Alajuela|Grecia":{lat:10.0731,lng:-84.3158},
+"Alajuela|San Mateo":{lat:9.9433,lng:-84.4339},
+"Alajuela|Atenas":{lat:9.9789,lng:-84.3825},
+"Alajuela|Naranjo":{lat:10.0989,lng:-84.3833},
+"Alajuela|Palmares":{lat:10.0628,lng:-84.4356},
+"Alajuela|Poás":{lat:10.1378,lng:-84.2256},
+"Alajuela|Orotina":{lat:9.9111,lng:-84.5972},
+"Alajuela|San Carlos":{lat:10.3300,lng:-84.4267},
+"Alajuela|Zarcero":{lat:10.1922,lng:-84.3994},
+"Alajuela|Valverde Vega":{lat:10.1217,lng:-84.3208},
+"Alajuela|Upala":{lat:10.8961,lng:-85.0167},
+"Alajuela|Los Chiles":{lat:11.0306,lng:-84.7158},
+"Alajuela|Guatuso":{lat:10.7464,lng:-84.8347},
+"Alajuela|Río Cuarto":{lat:10.3739,lng:-84.2719},
+"Cartago|Cartago":{lat:9.8633,lng:-83.9194},
+"Cartago|Paraíso":{lat:9.8378,lng:-83.8678},
+"Cartago|La Unión":{lat:9.9097,lng:-83.9742},
+"Cartago|Jiménez":{lat:9.8186,lng:-83.7747},
+"Cartago|Turrialba":{lat:9.9081,lng:-83.6803},
+"Cartago|Alvarado":{lat:9.8425,lng:-83.7950},
+"Cartago|Oreamuno":{lat:9.8917,lng:-83.8628},
+"Cartago|El Guarco":{lat:9.8231,lng:-83.9358},
+"Heredia|Heredia":{lat:10.0030,lng:-84.1170},
+"Heredia|Barva":{lat:10.0394,lng:-84.1175},
+"Heredia|Santo Domingo":{lat:9.9897,lng:-84.0908},
+"Heredia|Santa Bárbara":{lat:10.0294,lng:-84.1481},
+"Heredia|San Rafael":{lat:10.0192,lng:-84.0875},
+"Heredia|San Isidro":{lat:10.0364,lng:-84.0633},
+"Heredia|Belén":{lat:9.9847,lng:-84.1639},
+"Heredia|Flores":{lat:10.0058,lng:-84.1097},
+"Heredia|San Pablo":{lat:10.0033,lng:-84.1028},
+"Heredia|Sarapiquí":{lat:10.4639,lng:-84.0036},
+"Guanacaste|Liberia":{lat:10.6307,lng:-85.4432},
+"Guanacaste|Nicoya":{lat:10.1483,lng:-85.4519},
+"Guanacaste|Santa Cruz":{lat:10.2636,lng:-85.5878},
+"Guanacaste|Bagaces":{lat:10.5258,lng:-85.2503},
+"Guanacaste|Carrillo":{lat:10.4458,lng:-85.6614},
+"Guanacaste|Cañas":{lat:10.4292,lng:-85.0961},
+"Guanacaste|Abangares":{lat:10.3667,lng:-84.9967},
+"Guanacaste|Tilarán":{lat:10.4711,lng:-84.9658},
+"Guanacaste|Nandayure":{lat:10.0944,lng:-85.2628},
+"Guanacaste|La Cruz":{lat:11.0850,lng:-85.6294},
+"Guanacaste|Hojancha":{lat:10.1097,lng:-85.3722},
+"Puntarenas|Puntarenas":{lat:9.9779,lng:-84.8341},
+"Puntarenas|Esparza":{lat:9.9978,lng:-84.6644},
+"Puntarenas|Buenos Aires":{lat:9.1664,lng:-83.3367},
+"Puntarenas|Montes de Oro":{lat:9.9928,lng:-84.7592},
+"Puntarenas|Osa":{lat:9.0792,lng:-83.6964},
+"Puntarenas|Aguirre":{lat:9.4519,lng:-84.1467},
+"Puntarenas|Golfito":{lat:8.6422,lng:-83.1561},
+"Puntarenas|Coto Brus":{lat:8.8364,lng:-82.9658},
+"Puntarenas|Parrita":{lat:9.5189,lng:-84.3219},
+"Puntarenas|Corredores":{lat:8.5736,lng:-82.9622},
+"Puntarenas|Garabito":{lat:9.6189,lng:-84.6481},
+"Limón|Limón":{lat:9.9904,lng:-83.0360},
+"Limón|Pococí":{lat:10.2697,lng:-83.7956},
+"Limón|Siquirres":{lat:10.0950,lng:-83.5058},
+"Limón|Talamanca":{lat:9.5944,lng:-82.7553},
+"Limón|Matina":{lat:10.0903,lng:-83.2675},
+"Limón|Guácimo":{lat:10.2089,lng:-83.6839}
+};
+
 function mostrarPaso(n){
     pasoActual=n;
     document.querySelectorAll('.pantalla').forEach(function(p){p.classList.remove('activa');});
@@ -1569,7 +1657,21 @@ function cargarCantones(){
     if(p&&lugaresCR[p])lugaresCR[p].cantones.forEach(function(can){var o=document.createElement('option');o.value=can;o.textContent=can;c.appendChild(o);});
 }
 document.getElementById('select-canton').addEventListener('change',function(){document.getElementById('btn-manual').style.display=this.value?'block':'none';});
-function guardarUbicacionManual(){var p=document.getElementById('select-provincia').value;userProvincia=p;userLat=lugaresCR[p].coords.lat;userLng=lugaresCR[p].coords.lng;mostrarPaso(2);}
+function guardarUbicacionManual(){
+    var p=document.getElementById('select-provincia').value;
+    var c=document.getElementById('select-canton').value;
+    userProvincia=p;
+    var key=p+'|'+c;
+    if(c&&cantonesCR[key]){
+        // Usar las coordenadas específicas del cantón elegido
+        userLat=cantonesCR[key].lat;userLng=cantonesCR[key].lng;
+    }else{
+        // Fallback: si por algún motivo no hay coordenadas para ese cantón,
+        // usamos el centro de la provincia (comportamiento anterior) en vez de fallar.
+        userLat=lugaresCR[p].coords.lat;userLng=lugaresCR[p].coords.lng;
+    }
+    mostrarPaso(2);
+}
 
 var botonesCategoria=document.querySelectorAll('.cat-btn'),btnContinuarCat=document.getElementById('btn-categorias');
 botonesCategoria.forEach(function(btn){
@@ -1676,44 +1778,6 @@ function iniciarAnimacionTexto(){
             },250);
         }
     },550);
-}
-
-function mostrarFicha(l){
-    try{
-        document.getElementById('ficha-categoria').textContent=translateCat(l.categoria);
-        document.getElementById('ficha-nombre').textContent=getField(l,'nombre');
-        document.getElementById('ficha-referencia').textContent=getField(l,'referencia');
-        document.getElementById('ficha-horario').textContent=l.horario;
-        document.getElementById('ficha-costo').textContent=l.costo;
-        var costoStr=(l.costo||'').toString().toLowerCase();
-        var esGratis=(costoStr==='gratis'||costoStr==='free'||costoStr==='0'||costoStr.includes('gratuito'));
-        var modoCompraDiv=document.getElementById('ficha-modo-compra');
-        if(!esGratis){
-            var modoCompraTexto=getField(l,'modo_compra');
-            if(!modoCompraTexto||modoCompraTexto.trim()===''){modoCompraTexto=(currentLang==='es')?i18n.es.modo_compra_default:i18n.en.modo_compra_default_en;}
-            modoCompraDiv.innerHTML='<span style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>'+modoCompraTexto+'</span>';
-            modoCompraDiv.style.display='block';
-        }else{modoCompraDiv.style.display='none';}
-        var ul=document.getElementById('ficha-actividades');ul.innerHTML='';
-        var acts=getField(l,'actividades');
-        if(Array.isArray(acts))acts.forEach(function(a){var li=document.createElement('li');li.textContent=a;ul.appendChild(li);});
-        var nombreLugar=getField(l,'nombre')||'';
-        var queryDestino=encodeURIComponent(nombreLugar+', '+(l.canton||'')+', '+(l.provincia||'')+', Costa Rica');
-        var mapsUrl;
-        if(userLat&&userLng){mapsUrl='https://www.google.com/maps/dir/'+userLat+','+userLng+'/'+queryDestino;}
-        else{mapsUrl='https://www.google.com/maps/search/?api=1&query='+queryDestino;}
-        document.getElementById('btn-maps').href=mapsUrl;
-        var wazeDest=encodeURIComponent(nombreLugar+', '+(l.canton||'')+', Costa Rica');
-        document.getElementById('btn-waze').href='https://waze.com/ul?q='+wazeDest+'&navigate=yes';
-        gtag('event','ver_lugar',{nombre:getField(l,'nombre'),categoria:l.categoria,provincia:l.provincia,canton:l.canton,distancia_km:l.distancia?l.distancia.toFixed(1):''});
-        mostrarPaso(5);
-    }catch(err){
-        console.error('Error en mostrarFicha:',err,l);
-        resetearTexto();
-        listaRevelada=false;
-        document.getElementById('btn-revelar').style.display='flex';
-        alert((currentLang==='es'?'Hubo un problema al cargar este lugar. Probá con otro.\n\nDetalle: ':'There was a problem loading this place. Try another one.\n\nDetail: ')+err.message);
-    }
 }
 
 /* ════════════════════════════════════════════════════════════
