@@ -1813,11 +1813,26 @@ function mostrarFicha(l){
 
     var btnMaps=document.getElementById('btn-maps');
     var btnWaze=document.getElementById('btn-waze');
+    var nombreDestino=getField(l,'nombre');
+    // Destino: por nombre del lugar (no por coordenadas), tal como funcionaba originalmente.
+    // Origen: la ubicación elegida por el usuario (cantón seleccionado o GPS), guardada en userLat/userLng,
+    // para que el recorrido en Maps inicie ahí y no en la ubicación actual del dispositivo.
+    if(nombreDestino){
+        var destinoQuery=encodeURIComponent(nombreDestino+' Costa Rica');
+        if(userLat!=null&&userLng!=null){
+            btnMaps.href='https://www.google.com/maps/dir/?api=1&origin='+userLat+','+userLng+'&destination='+destinoQuery+'&travelmode=driving';
+        }else{
+            btnMaps.href='https://www.google.com/maps/search/?api=1&query='+destinoQuery;
+        }
+    }else{
+        btnMaps.href='#';
+    }
+    // Waze solo soporta coordenadas como destino (no nombres), así que usamos lat/lng del lugar para el destino.
+    // El origen en Waze siempre es la ubicación actual del dispositivo al momento de navegar; no se puede forzar por URL.
     if(l.lat!=null&&l.lng!=null){
-        btnMaps.href='https://www.google.com/maps/search/?api=1&query='+l.lat+','+l.lng;
         btnWaze.href='https://waze.com/ul?ll='+l.lat+','+l.lng+'&navigate=yes';
     }else{
-        btnMaps.href='#';btnWaze.href='#';
+        btnWaze.href='#';
     }
 
     lucide.createIcons();
