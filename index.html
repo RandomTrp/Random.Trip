@@ -1780,6 +1780,50 @@ function iniciarAnimacionTexto(){
     },550);
 }
 
+function mostrarFicha(l){
+    document.getElementById('ficha-categoria').textContent=translateCat(l.categoria);
+    document.getElementById('ficha-nombre').textContent=getField(l,'nombre');
+    document.getElementById('ficha-referencia').textContent=getField(l,'referencia')||'';
+
+    var horarioEl=document.getElementById('ficha-horario');
+    horarioEl.textContent=l.horario||'-';
+
+    var costoEl=document.getElementById('ficha-costo');
+    costoEl.textContent=l.costo||'-';
+
+    var modoCompraEl=document.getElementById('ficha-modo-compra');
+    var modoCompraTexto=getField(l,'modo_compra');
+    if(modoCompraTexto){
+        modoCompraEl.textContent=modoCompraTexto;
+        modoCompraEl.style.display='block';
+    }else{
+        modoCompraEl.style.display='none';
+    }
+
+    var actividadesEl=document.getElementById('ficha-actividades');
+    actividadesEl.innerHTML='';
+    var actividades=getField(l,'actividades');
+    if(actividades&&actividades.length){
+        actividades.forEach(function(act){
+            var li=document.createElement('li');
+            li.textContent=act;
+            actividadesEl.appendChild(li);
+        });
+    }
+
+    var btnMaps=document.getElementById('btn-maps');
+    var btnWaze=document.getElementById('btn-waze');
+    if(l.lat!=null&&l.lng!=null){
+        btnMaps.href='https://www.google.com/maps/search/?api=1&query='+l.lat+','+l.lng;
+        btnWaze.href='https://waze.com/ul?ll='+l.lat+','+l.lng+'&navigate=yes';
+    }else{
+        btnMaps.href='#';btnWaze.href='#';
+    }
+
+    lucide.createIcons();
+    mostrarPaso(5);
+}
+
 /* ════════════════════════════════════════════════════════════
    META WEBVIEW: Instagram → Random.trip → Detectar plataforma → Mostrar instrucciones
    ════════════════════════════════════════════════════════════ */
