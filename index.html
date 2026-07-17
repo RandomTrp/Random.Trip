@@ -1730,10 +1730,8 @@ function buscarLugares(){
 function procesarResultados(td,af,btnT){
     var r=td.map(function(l){return Object.assign({},l,{distancia:calcularDistancia(userLat,userLng,l.lat,l.lng)});}).filter(function(l){return l.distancia<=radioMaxKm;}).sort(function(a,b){return a.distancia-b.distancia;});
     if(r.length===0){
-        r=td.map(function(l){return Object.assign({},l,{distancia:calcularDistancia(userLat,userLng,l.lat,l.lng)});}).sort(function(a,b){return a.distancia-b.distancia;});
-        af.innerHTML='<span>'+t('aviso_filtro')+'</span>';af.style.display='block';
+        af.innerHTML=t('aviso_vacio');af.style.display='block';
     }
-    if(r.length===0){af.innerHTML=t('aviso_vacio');af.style.display='block';}
     lugaresFiltrados=r;mostrarPaso(4);btnT.disabled=false;btnT.textContent=t('btn_buscar');
 }
 
@@ -1855,11 +1853,6 @@ function mostrarFicha(l){
     gate.classList.add('active');
 
     if(isIOS){
-        // iOS: no existe ningún esquema de URL ni API capaz de forzar la apertura
-        // de Safari desde dentro del WebView de Instagram. Apple no expone un
-        // scheme invocable para Safari, y aunque existiera, Meta intercepta y
-        // bloquea salidas hacia otras apps desde su WebView por diseño.
-        // Por eso mostramos directamente las instrucciones del menú nativo "•••".
         document.getElementById('meta-view-ios').style.display = 'block';
 
         var arrow = document.createElement('div');
@@ -1867,7 +1860,6 @@ function mostrarFicha(l){
         arrow.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>';
         document.body.appendChild(arrow);
     } else if(isAndroid){
-        // Android: el intent SÍ es una API pública del sistema y Chrome la respeta.
         document.getElementById('meta-view-android').style.display = 'block';
     } else {
         document.getElementById('meta-view-android').style.display = 'block';
