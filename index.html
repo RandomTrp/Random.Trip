@@ -765,9 +765,27 @@
         }
         .ficha-title {
             font-size: 26px; font-weight: 900; letter-spacing: -0.5px;
-            line-height: 1.2; color: var(--text-hi); margin-bottom: 10px;
+            line-height: 1.2; color: var(--text-hi); margin-bottom: 14px;
         }
-        .ficha-ref { font-size: 14px; color: var(--text-md); line-height: 1.6; margin-bottom: 24px; }
+        .ficha-ref {
+            position: relative;
+            font-size: 16.5px; font-style: italic; font-weight: 400;
+            color: var(--text-hi); line-height: 1.65;
+            background: linear-gradient(135deg, rgba(0,200,150,0.08), rgba(0,200,150,0.02));
+            border-left: 3px solid var(--accent);
+            border-radius: 0 var(--r-md) var(--r-md) 0;
+            padding: 18px 20px 18px 24px;
+            margin-bottom: 26px;
+        }
+        .ficha-ref::before {
+            content: '"';
+            position: absolute; top: -6px; left: 10px;
+            font-family: Georgia, serif; font-size: 46px; font-style: normal;
+            font-weight: 900; color: var(--accent); opacity: 0.35;
+            line-height: 1;
+        }
+
+        .ficha-datos { margin-top: 24px; }
         .ficha-info-row {
             display: flex; align-items: center; gap: 14px;
             padding: 14px 0; border-bottom: 1px solid var(--border-0);
@@ -781,22 +799,21 @@
         }
         .ficha-icon svg { width: 17px; height: 17px; stroke: var(--text-lo); stroke-width: 1.8; }
 
-        .ficha-actividades { margin: 20px 0 0; }
+        .ficha-actividades { margin: 0 0 6px; }
         .ficha-actividades h4 {
             font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
             text-transform: uppercase; color: var(--text-lo); margin-bottom: 14px;
         }
-        .ficha-actividades ul { list-style: none; padding: 0; }
-        .ficha-actividades li {
-            padding: 10px 0 10px 22px; position: relative;
-            font-size: 14px; color: var(--text-md); line-height: 1.5;
-            border-bottom: 1px solid var(--border-0);
+        .ficha-actividades-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .ficha-actividad-chip {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: var(--accent-bg); border: 1px solid rgba(0,200,150,0.22);
+            color: var(--accent); font-size: 13.5px; font-weight: 700;
+            padding: 9px 16px; border-radius: 30px;
         }
-        .ficha-actividades li:last-child { border-bottom: none; }
-        .ficha-actividades li::before {
-            content: ''; width: 6px; height: 6px;
+        .ficha-actividad-chip::before {
+            content: ''; width: 6px; height: 6px; flex-shrink: 0;
             background: var(--accent); border-radius: 50%;
-            position: absolute; left: 0; top: 16px;
         }
 
         .modo-compra-box {
@@ -1214,11 +1231,11 @@
         <h1 class="step-title" data-i18n="paso3_title">¿Qué tan lejos querés ir?</h1>
         <p class="step-sub" data-i18n="paso3_subtitle">Filtramos los lugares según la distancia.</p>
         <div class="dist-grid">
-            <button class="dist-btn" data-radio="5" onclick="seleccionarDistancia(this)"><div class="dist-emoji">📍</div><div class="dist-label" data-i18n="dist_aquicerca">Aquí cerca</div><div class="dist-km">5 km</div></button>
-            <button class="dist-btn" data-radio="15" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🌿</div><div class="dist-label" data-i18n="dist_paseo">A un paseo</div><div class="dist-km">15 km</div></button>
-            <button class="dist-btn" data-radio="40" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🗺️</div><div class="dist-label" data-i18n="dist_zonacercana">Zona cercana</div><div class="dist-km">40 km</div></button>
-            <button class="dist-btn" data-radio="80" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🌅</div><div class="dist-label" data-i18n="dist_mediadistancia">Media distancia</div><div class="dist-km">80 km</div></button>
-            <button class="dist-btn" data-radio="150" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🏔️</div><div class="dist-label" data-i18n="dist_lejos">Lejos</div><div class="dist-km">150 km</div></button>
+            <button class="dist-btn" data-radio="3.5" onclick="seleccionarDistancia(this)"><div class="dist-emoji">📍</div><div class="dist-label" data-i18n="dist_aquicerca">Aquí cerca</div><div class="dist-km">5 km</div></button>
+            <button class="dist-btn" data-radio="11" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🌿</div><div class="dist-label" data-i18n="dist_paseo">A un paseo</div><div class="dist-km">15 km</div></button>
+            <button class="dist-btn" data-radio="28" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🗺️</div><div class="dist-label" data-i18n="dist_zonacercana">Zona cercana</div><div class="dist-km">40 km</div></button>
+            <button class="dist-btn" data-radio="57" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🌅</div><div class="dist-label" data-i18n="dist_mediadistancia">Media distancia</div><div class="dist-km">80 km</div></button>
+            <button class="dist-btn" data-radio="107" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🏔️</div><div class="dist-label" data-i18n="dist_lejos">Lejos</div><div class="dist-km">150 km</div></button>
             <button class="dist-btn" data-radio="9999" onclick="seleccionarDistancia(this)"><div class="dist-emoji">🌍</div><div class="dist-label" data-i18n="dist_todopais">Todo el país</div><div class="dist-km" data-i18n="dist_sinlimite">Sin límite</div></button>
         </div>
         <button id="btn-transporte" class="btn-primary" disabled onclick="buscarLugares()" data-i18n="btn_buscar">Buscar lugares</button>
@@ -1257,33 +1274,27 @@
         <h1 class="ficha-title" id="ficha-nombre"></h1>
         <p class="ficha-ref" id="ficha-referencia"></p>
         <div id="ficha-modo-compra" class="modo-compra-box"></div>
-        <div class="ficha-info-row">
-            <div class="ficha-icon"><i data-lucide="clock"></i></div>
-            <div id="ficha-horario"></div>
-        </div>
-        <div class="ficha-info-row">
-            <div class="ficha-icon"><i data-lucide="coins"></i></div>
-            <div id="ficha-costo"></div>
-        </div>
-        <div class="ficha-info-row" id="ficha-direccion-row" style="display:none;">
-            <div class="ficha-icon"><i data-lucide="map-pin"></i></div>
-            <div id="ficha-direccion"></div>
-        </div>
-        <div class="ficha-info-row" id="ficha-telefono-row" style="display:none;">
-            <div class="ficha-icon"><i data-lucide="phone"></i></div>
-            <a id="ficha-telefono" href="#" style="color:inherit;text-decoration:none;"></a>
-        </div>
-        <div class="ficha-info-row" id="ficha-sitio-web-row" style="display:none;">
-            <div class="ficha-icon"><i data-lucide="globe"></i></div>
-            <a id="ficha-sitio-web" href="#" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;word-break:break-all;"></a>
-        </div>
-        <div class="ficha-info-row" id="ficha-accesibilidad-row" style="display:none;">
-            <div class="ficha-icon"><i data-lucide="accessibility"></i></div>
-            <div id="ficha-accesibilidad"></div>
-        </div>
         <div class="ficha-actividades">
             <h4 id="ficha-actividades-title" data-i18n="actividades">Actividades</h4>
-            <ul id="ficha-actividades"></ul>
+            <div id="ficha-actividades" class="ficha-actividades-chips"></div>
+        </div>
+        <div class="ficha-datos">
+            <div class="ficha-info-row" id="ficha-direccion-row" style="display:none;">
+                <div class="ficha-icon"><i data-lucide="map-pin"></i></div>
+                <div id="ficha-direccion"></div>
+            </div>
+            <div class="ficha-info-row" id="ficha-telefono-row" style="display:none;">
+                <div class="ficha-icon"><i data-lucide="phone"></i></div>
+                <a id="ficha-telefono" href="#" style="color:inherit;text-decoration:none;"></a>
+            </div>
+            <div class="ficha-info-row" id="ficha-sitio-web-row" style="display:none;">
+                <div class="ficha-icon"><i data-lucide="globe"></i></div>
+                <a id="ficha-sitio-web" href="#" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;word-break:break-all;"></a>
+            </div>
+            <div class="ficha-info-row" id="ficha-accesibilidad-row" style="display:none;">
+                <div class="ficha-icon"><i data-lucide="accessibility"></i></div>
+                <div id="ficha-accesibilidad"></div>
+            </div>
         </div>
         <div class="nav-btns">
             <a id="btn-maps" href="#" target="_blank" class="btn-nav btn-maps">
@@ -1711,7 +1722,7 @@ function guardarCategorias(){if(categoriasSeleccionadas.length>0)mostrarPaso(3);
 function seleccionarDistancia(btn){
     document.querySelectorAll('.dist-btn').forEach(function(b){b.classList.remove('seleccionado');});
     btn.classList.add('seleccionado');
-    radioMaxKm=parseInt(btn.dataset.radio);
+    radioMaxKm=parseFloat(btn.dataset.radio);
     document.getElementById('btn-transporte').disabled=false;
 }
 
@@ -1733,10 +1744,19 @@ function buscarLugares(){
     btnT.disabled=true;btnT.textContent=t('btn_buscando');
     var cc=categoriasSeleccionadas.includes('aleatorio')?todasLasCategorias:categoriasSeleccionadas;
     var af=document.getElementById('aviso-filtro');af.style.display='none';
-    window._db.collection('lugares').where('categoria','in',cc).limit(500).get()
-    .then(function(snap){
+    // Límite por categoría (no uno solo global): así cada categoría queda representada de forma
+    // pareja, en vez de que Firestore devuelva todo ordenado alfabéticamente por ID de documento
+    // y una sola categoría (ej. "compras") se coma el límite completo antes de llegar a las demás.
+    var limitePorCategoria=Math.max(60,Math.ceil(500/cc.length));
+    var consultas=cc.map(function(cat){
+        return window._db.collection('lugares').where('categoria','==',cat).limit(limitePorCategoria).get();
+    });
+    Promise.all(consultas)
+    .then(function(snaps){
         var td=[];
-        snap.forEach(function(doc){var d=doc.data();td.push({id:doc.id,nombre:d.nombre,nombre_en:d.nombre_en,categoria:d.categoria,provincia:d.provincia,canton:d.canton,lat:d.lat,lng:d.lng,horario:d.horario,horario_en:d.horario_en,costo:d.costo,costo_en:d.costo_en,modo_compra:d.modo_compra,modo_compra_en:d.modo_compra_en,referencia:d.referencia,referencia_en:d.referencia_en,actividades:d.actividades,actividades_en:d.actividades_en,telefono:d.telefono,sitio_web:d.sitio_web,accesibilidad:d.accesibilidad,direccion_osm:d.direccion_osm});});
+        snaps.forEach(function(snap){
+            snap.forEach(function(doc){var d=doc.data();td.push({id:doc.id,nombre:d.nombre,nombre_en:d.nombre_en,categoria:d.categoria,provincia:d.provincia,canton:d.canton,lat:d.lat,lng:d.lng,horario:d.horario,horario_en:d.horario_en,costo:d.costo,costo_en:d.costo_en,modo_compra:d.modo_compra,modo_compra_en:d.modo_compra_en,referencia:d.referencia,referencia_en:d.referencia_en,actividades:d.actividades,actividades_en:d.actividades_en,telefono:d.telefono,sitio_web:d.sitio_web,accesibilidad:d.accesibilidad,direccion_osm:d.direccion_osm});});
+        });
         procesarResultados(td,af,btnT);
     }).catch(function(err){
         console.error('Error Firebase:',err);
@@ -1801,12 +1821,6 @@ function mostrarFicha(l){
     document.getElementById('ficha-nombre').textContent=getField(l,'nombre');
     document.getElementById('ficha-referencia').textContent=getField(l,'referencia')||'';
 
-    var horarioEl=document.getElementById('ficha-horario');
-    horarioEl.textContent=getField(l,'horario')||'-';
-
-    var costoEl=document.getElementById('ficha-costo');
-    costoEl.textContent=getField(l,'costo')||'-';
-
     var direccionRow=document.getElementById('ficha-direccion-row');
     var direccionEl=document.getElementById('ficha-direccion');
     if(l.direccion_osm){
@@ -1860,15 +1874,20 @@ function mostrarFicha(l){
         accesibilidadRow.style.display='none';
     }
 
+    var actividadesSeccion=document.querySelector('.ficha-actividades');
     var actividadesEl=document.getElementById('ficha-actividades');
     actividadesEl.innerHTML='';
     var actividades=getField(l,'actividades');
     if(actividades&&actividades.length){
+        actividadesSeccion.style.display='block';
         actividades.forEach(function(act){
-            var li=document.createElement('li');
-            li.textContent=act;
-            actividadesEl.appendChild(li);
+            var chip=document.createElement('span');
+            chip.className='ficha-actividad-chip';
+            chip.textContent=act;
+            actividadesEl.appendChild(chip);
         });
+    }else{
+        actividadesSeccion.style.display='none';
     }
 
     var btnMaps=document.getElementById('btn-maps');
