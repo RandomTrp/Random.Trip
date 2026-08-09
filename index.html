@@ -1265,6 +1265,22 @@
             <div class="ficha-icon"><i data-lucide="coins"></i></div>
             <div id="ficha-costo"></div>
         </div>
+        <div class="ficha-info-row" id="ficha-direccion-row" style="display:none;">
+            <div class="ficha-icon"><i data-lucide="map-pin"></i></div>
+            <div id="ficha-direccion"></div>
+        </div>
+        <div class="ficha-info-row" id="ficha-telefono-row" style="display:none;">
+            <div class="ficha-icon"><i data-lucide="phone"></i></div>
+            <a id="ficha-telefono" href="#" style="color:inherit;text-decoration:none;"></a>
+        </div>
+        <div class="ficha-info-row" id="ficha-sitio-web-row" style="display:none;">
+            <div class="ficha-icon"><i data-lucide="globe"></i></div>
+            <a id="ficha-sitio-web" href="#" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;word-break:break-all;"></a>
+        </div>
+        <div class="ficha-info-row" id="ficha-accesibilidad-row" style="display:none;">
+            <div class="ficha-icon"><i data-lucide="accessibility"></i></div>
+            <div id="ficha-accesibilidad"></div>
+        </div>
         <div class="ficha-actividades">
             <h4 id="ficha-actividades-title" data-i18n="actividades">Actividades</h4>
             <ul id="ficha-actividades"></ul>
@@ -1323,6 +1339,7 @@ var i18n={
         paso4_title:"Destinos encontrados",aviso_filtro:"No encontramos opciones tan cercanas, así que ampliamos la búsqueda.",aviso_vacio:"No hay lugares disponibles.",tab_lista:"Lista Cercana",tab_random:"Búsqueda Aleatoria",btn_revelar:"Descubrir Lugares Cercanos",scan_waiting:"Esperando consulta...",btn_sorprendeme:"SORPRÉNDEME",btn_analizando:"ANALIZANDO...",
         scan_1:"Analizando ubicación...",scan_2:"Filtrando categorías...",scan_3:"Calculando distancias...",scan_4:"Consultando base de datos...",scan_5:"Preparando sorpresa...",scan_6:"¡Destino seleccionado!",
         actividades:"Actividades",btn_maps:"Maps",btn_waze:"Waze",btn_otro:"Elegir otro lugar",btn_volver:"Volver",error_firebase:"Error al conectar con Firebase.",
+        accesibilidad_yes:"Accesible en silla de ruedas",accesibilidad_limited:"Accesibilidad parcial",accesibilidad_no:"No accesible en silla de ruedas",sitio_web_label:"Sitio web",
         cat_label_playas:"Playas",cat_label_naturaleza:"Naturaleza",cat_label_vida_nocturna:"Vida Nocturna",cat_label_cultura:"Cultura",cat_label_gastronomia:"Gastronomía",cat_label_entretenimiento:"Entretenimiento",cat_label_compras:"Compras",cat_label_parques:"Parques",
         modo_compra_default:"Por favor, verificá si la entrada se adquiere en línea o en el lugar.",
         modo_compra_default_en:"Please check if the ticket is purchased online or on site."
@@ -1356,6 +1373,7 @@ var i18n={
         paso4_title:"Destinations found",aviso_filtro:"No nearby options found, expanded search.",aviso_vacio:"No places available.",tab_lista:"Nearby List",tab_random:"Random Search",btn_revelar:"Discover Nearby Places",scan_waiting:"Waiting...",btn_sorprendeme:"SURPRISE ME",btn_analizando:"ANALYZING...",
         scan_1:"Analyzing location...",scan_2:"Filtering categories...",scan_3:"Calculating distances...",scan_4:"Querying database...",scan_5:"Preparing surprise...",scan_6:"Destination selected!",
         actividades:"Activities",btn_maps:"Maps",btn_waze:"Waze",btn_otro:"Choose another place",btn_volver:"Back",error_firebase:"Firebase error.",
+        accesibilidad_yes:"Wheelchair accessible",accesibilidad_limited:"Partially accessible",accesibilidad_no:"Not wheelchair accessible",sitio_web_label:"Website",
         cat_label_playas:"Beaches",cat_label_naturaleza:"Nature",cat_label_vida_nocturna:"Nightlife",cat_label_cultura:"Culture",cat_label_gastronomia:"Gastronomy",cat_label_entretenimiento:"Entertainment",cat_label_compras:"Shopping",cat_label_parques:"Parks",
         modo_compra_default:"Please check if the ticket is purchased online or on site.",
         modo_compra_default_en:"Please check if the ticket is purchased online or on site."
@@ -1718,7 +1736,7 @@ function buscarLugares(){
     window._db.collection('lugares').where('categoria','in',cc).limit(500).get()
     .then(function(snap){
         var td=[];
-        snap.forEach(function(doc){var d=doc.data();td.push({id:doc.id,nombre:d.nombre,nombre_en:d.nombre_en,categoria:d.categoria,provincia:d.provincia,canton:d.canton,lat:d.lat,lng:d.lng,horario:d.horario,costo:d.costo,modo_compra:d.modo_compra,modo_compra_en:d.modo_compra_en,referencia:d.referencia,referencia_en:d.referencia_en,actividades:d.actividades,actividades_en:d.actividades_en});});
+        snap.forEach(function(doc){var d=doc.data();td.push({id:doc.id,nombre:d.nombre,nombre_en:d.nombre_en,categoria:d.categoria,provincia:d.provincia,canton:d.canton,lat:d.lat,lng:d.lng,horario:d.horario,horario_en:d.horario_en,costo:d.costo,costo_en:d.costo_en,modo_compra:d.modo_compra,modo_compra_en:d.modo_compra_en,referencia:d.referencia,referencia_en:d.referencia_en,actividades:d.actividades,actividades_en:d.actividades_en,telefono:d.telefono,sitio_web:d.sitio_web,accesibilidad:d.accesibilidad,direccion_osm:d.direccion_osm});});
         procesarResultados(td,af,btnT);
     }).catch(function(err){
         console.error('Error Firebase:',err);
@@ -1784,10 +1802,19 @@ function mostrarFicha(l){
     document.getElementById('ficha-referencia').textContent=getField(l,'referencia')||'';
 
     var horarioEl=document.getElementById('ficha-horario');
-    horarioEl.textContent=l.horario||'-';
+    horarioEl.textContent=getField(l,'horario')||'-';
 
     var costoEl=document.getElementById('ficha-costo');
-    costoEl.textContent=l.costo||'-';
+    costoEl.textContent=getField(l,'costo')||'-';
+
+    var direccionRow=document.getElementById('ficha-direccion-row');
+    var direccionEl=document.getElementById('ficha-direccion');
+    if(l.direccion_osm){
+        direccionEl.textContent=l.direccion_osm;
+        direccionRow.style.display='flex';
+    }else{
+        direccionRow.style.display='none';
+    }
 
     var modoCompraEl=document.getElementById('ficha-modo-compra');
     var modoCompraTexto=getField(l,'modo_compra');
@@ -1796,6 +1823,41 @@ function mostrarFicha(l){
         modoCompraEl.style.display='block';
     }else{
         modoCompraEl.style.display='none';
+    }
+
+    var telefonoRow=document.getElementById('ficha-telefono-row');
+    var telefonoEl=document.getElementById('ficha-telefono');
+    if(l.telefono){
+        telefonoEl.textContent=l.telefono;
+        telefonoEl.href='tel:'+l.telefono.replace(/[^+\d]/g,'');
+        telefonoRow.style.display='flex';
+    }else{
+        telefonoRow.style.display='none';
+    }
+
+    var sitioWebRow=document.getElementById('ficha-sitio-web-row');
+    var sitioWebEl=document.getElementById('ficha-sitio-web');
+    if(l.sitio_web){
+        sitioWebEl.textContent=t('sitio_web_label');
+        sitioWebEl.href=l.sitio_web;
+        sitioWebRow.style.display='flex';
+    }else{
+        sitioWebRow.style.display='none';
+    }
+
+    var accesibilidadRow=document.getElementById('ficha-accesibilidad-row');
+    var accesibilidadEl=document.getElementById('ficha-accesibilidad');
+    if(l.accesibilidad==='yes'){
+        accesibilidadEl.textContent=t('accesibilidad_yes');
+        accesibilidadRow.style.display='flex';
+    }else if(l.accesibilidad==='limited'){
+        accesibilidadEl.textContent=t('accesibilidad_limited');
+        accesibilidadRow.style.display='flex';
+    }else if(l.accesibilidad==='no'){
+        accesibilidadEl.textContent=t('accesibilidad_no');
+        accesibilidadRow.style.display='flex';
+    }else{
+        accesibilidadRow.style.display='none';
     }
 
     var actividadesEl=document.getElementById('ficha-actividades');
@@ -1812,10 +1874,18 @@ function mostrarFicha(l){
     var btnMaps=document.getElementById('btn-maps');
     var btnWaze=document.getElementById('btn-waze');
     var nombreDestino=getField(l,'nombre');
-    // Destino: por nombre del lugar (no por coordenadas), tal como funcionaba originalmente.
+    // Destino: por coordenadas (lat/lng) del lugar, para evitar que Google Maps
+    // resuelva el nombre a un negocio homónimo ubicado en otra parte del país.
     // Origen: la ubicación elegida por el usuario (cantón seleccionado o GPS), guardada en userLat/userLng,
     // para que el recorrido en Maps inicie ahí y no en la ubicación actual del dispositivo.
-    if(nombreDestino){
+    if(l.lat!=null&&l.lng!=null){
+        var destinoCoords=l.lat+','+l.lng;
+        if(userLat!=null&&userLng!=null){
+            btnMaps.href='https://www.google.com/maps/dir/?api=1&origin='+userLat+','+userLng+'&destination='+destinoCoords+'&travelmode=driving';
+        }else{
+            btnMaps.href='https://www.google.com/maps/search/?api=1&query='+destinoCoords;
+        }
+    }else if(nombreDestino){
         var destinoQuery=encodeURIComponent(nombreDestino+' Costa Rica');
         if(userLat!=null&&userLng!=null){
             btnMaps.href='https://www.google.com/maps/dir/?api=1&origin='+userLat+','+userLng+'&destination='+destinoQuery+'&travelmode=driving';
