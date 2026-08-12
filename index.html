@@ -1690,16 +1690,13 @@ function actualizarScrollHint(){
     var bb=document.getElementById('back-bar');
     hint.style.bottom=(bb&&!bb.classList.contains('oculto')?76:20)+'px';
     if(!activa){hint.classList.remove('show');return;}
-    var haySobrante=(activa.scrollHeight-activa.clientHeight)>24;
-    var noLlegoAlFinal=(activa.scrollHeight-activa.scrollTop-activa.clientHeight)>24;
+    var scrollEl=document.scrollingElement||document.documentElement;
+    var haySobrante=(scrollEl.scrollHeight-scrollEl.clientHeight)>24;
+    var noLlegoAlFinal=(scrollEl.scrollHeight-scrollEl.scrollTop-scrollEl.clientHeight)>24;
     if(haySobrante&&noLlegoAlFinal)hint.classList.add('show');
     else hint.classList.remove('show');
 }
-document.addEventListener('scroll',function(e){
-    if(e.target&&e.target.classList&&e.target.classList.contains('pantalla')){
-        actualizarScrollHint();
-    }
-},true);
+window.addEventListener('scroll',actualizarScrollHint,{passive:true});
 window.addEventListener('resize',actualizarScrollHint);
 
 function detectarNavegador(){var ua=navigator.userAgent||'';if(/iPad|iPhone|iPod/.test(ua))return'safari-ios';if(/Safari/.test(ua)&&!/Chrome/.test(ua))return'safari-mac';if(/Firefox/.test(ua))return'firefox';return'chrome';}
