@@ -1002,6 +1002,32 @@
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast svg { width: 14px; height: 14px; stroke: var(--accent); stroke-width: 2.5; }
 
+        /* ─── SCROLL HINT ─── */
+        .scroll-hint {
+            position: fixed;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(0,200,150,0.14);
+            border: 1px solid rgba(0,200,150,0.3);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 60;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.35s ease, bottom 0.3s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .scroll-hint.show {
+            opacity: 1;
+            animation: scrollHintBounce 1.6s ease-in-out infinite;
+        }
+        .scroll-hint svg { width: 18px; height: 18px; stroke: var(--accent); stroke-width: 2.2; }
+        @keyframes scrollHintBounce {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(6px); }
+        }
+
         /* ─── MOBILE OVERRIDES ─── */
         @media (max-width: 480px) {
             .step-title { font-size: 24px; }
@@ -1352,6 +1378,11 @@
         <button class="btn-outline" style="margin-top:12px;" onclick="mostrarPaso(4)" data-i18n="btn_otro">Elegir otro lugar</button>
     </div>
 
+    <!-- Scroll hint -->
+    <div id="scroll-hint" class="scroll-hint" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+
     <!-- Back bar -->
     <div class="back-bar oculto" id="back-bar">
         <button id="btn-back" onclick="irAtras()">
@@ -1529,7 +1560,7 @@ function finishOnboarding(){
     el.addEventListener('touchend',function(e){if(!tr)return;tr=false;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){if(dx<0)nextOnbSlide();else if(currentSlide>0)goToSlide(currentSlide-1);}},{passive:true});
 })();
 
-function showApp(){document.getElementById('app-container').classList.add('visible');}
+function showApp(){document.getElementById('app-container').classList.add('visible');setTimeout(actualizarScrollHint,300);}
 
 window.onload=function(){
     lucide.createIcons();
@@ -1647,8 +1678,29 @@ function mostrarPaso(n){
     if(n>1)pf.classList.add('moving');else pf.classList.remove('moving');
     lucide.createIcons();
     window.scrollTo(0,0);
+    setTimeout(actualizarScrollHint,150);
 }
 function irAtras(){if(pasoActual>1)mostrarPaso(pasoActual-1);}
+
+/* ─── SCROLL HINT ─── */
+function actualizarScrollHint(){
+    var hint=document.getElementById('scroll-hint');
+    if(!hint)return;
+    var activa=document.querySelector('.pantalla.activa');
+    var bb=document.getElementById('back-bar');
+    hint.style.bottom=(bb&&!bb.classList.contains('oculto')?76:20)+'px';
+    if(!activa){hint.classList.remove('show');return;}
+    var haySobrante=(activa.scrollHeight-activa.clientHeight)>24;
+    var noLlegoAlFinal=(activa.scrollHeight-activa.scrollTop-activa.clientHeight)>24;
+    if(haySobrante&&noLlegoAlFinal)hint.classList.add('show');
+    else hint.classList.remove('show');
+}
+document.addEventListener('scroll',function(e){
+    if(e.target&&e.target.classList&&e.target.classList.contains('pantalla')){
+        actualizarScrollHint();
+    }
+},true);
+window.addEventListener('resize',actualizarScrollHint);
 
 function detectarNavegador(){var ua=navigator.userAgent||'';if(/iPad|iPhone|iPod/.test(ua))return'safari-ios';if(/Safari/.test(ua)&&!/Chrome/.test(ua))return'safari-mac';if(/Firefox/.test(ua))return'firefox';return'chrome';}
 
@@ -1876,6 +1928,7 @@ function revelarLista(){
         card.innerHTML='<h3>'+getField(l,'nombre')+'</h3><div class="lugar-meta"><span class="lugar-tag">'+translateCat(l.categoria)+'</span><span class="lugar-dist">'+l.distancia.toFixed(1)+' km</span></div>';
         c.appendChild(card);
     });
+    setTimeout(actualizarScrollHint,150);
 }
 function resetearTexto(){
     if(textInterval)clearInterval(textInterval);if(textTimeout)clearTimeout(textTimeout);
