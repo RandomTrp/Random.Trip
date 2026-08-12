@@ -1293,7 +1293,6 @@
             <div class="tabs">
                 <button class="tab-btn activa" onclick="cambiarVista('lista',this)" data-i18n="tab_lista">Lista Cercana</button>
                 <button class="tab-btn" onclick="cambiarVista('random',this)" data-i18n="tab_random">Búsqueda Aleatoria</button>
-                <button class="tab-btn" onclick="cambiarVista('mapa',this)" data-i18n="tab_mapa">Mapa</button>
             </div>
             <div id="vista-lista" class="vista activa">
                 <button id="btn-revelar" class="btn-primary" onclick="revelarLista()" data-i18n="btn_revelar">Descubrir Lugares Cercanos</button>
@@ -1308,10 +1307,6 @@
                     </div>
                     <button id="btn-random" class="btn-primary" style="width:auto;padding:15px 40px;" onclick="iniciarAnimacionTexto()"></button>
                 </div>
-            </div>
-            <div id="vista-mapa" class="vista">
-                <div id="mapa-radio"></div>
-                <p class="hint-mapa" data-i18n="mapa_hint">El círculo muestra el radio de búsqueda en línea recta — la distancia real manejando puede ser mayor.</p>
             </div>
         </div>
     </div>
@@ -1869,56 +1864,7 @@ function procesarResultados(td,af,btnT){
     lugaresFiltrados=r;mostrarPaso(4);btnT.disabled=false;btnT.textContent=t('btn_buscar');
 }
 
-function cambiarVista(v,btn){document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('activa');});document.querySelectorAll('.vista').forEach(function(vi){vi.classList.remove('activa');});btn.classList.add('activa');document.getElementById('vista-'+v).classList.add('activa');if(v==='mapa')setTimeout(inicializarMapaRadio,50);}
-
-var mapaRadioInstancia=null;
-function inicializarMapaRadio(){
-    if(userLat==null||userLng==null)return;
-    var contenedor=document.getElementById('mapa-radio');
-    if(!contenedor||typeof L==='undefined')return;
-
-    // Si ya había un mapa de una búsqueda anterior, lo destruimos para armar uno nuevo
-    // (Leaflet no permite re-inicializar el mismo contenedor sin esto).
-    if(mapaRadioInstancia){mapaRadioInstancia.remove();mapaRadioInstancia=null;}
-
-    mapaRadioInstancia=L.map(contenedor,{zoomControl:true,attributionControl:true}).setView([userLat,userLng],12);
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
-        attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        maxZoom:19
-    }).addTo(mapaRadioInstancia);
-
-    // Marcador de tu ubicación
-    var iconoUsuario=L.divIcon({className:'',html:'<div class="marcador-usuario"></div>',iconSize:[18,18],iconAnchor:[9,9]});
-    L.marker([userLat,userLng],{icon:iconoUsuario}).addTo(mapaRadioInstancia).bindPopup(t('mapa_tu_ubicacion'));
-
-    // Círculo del radio de búsqueda (en línea recta — el mismo que usa el filtro)
-    if(radioMaxKm && radioMaxKm<9999){
-        L.circle([userLat,userLng],{
-            radius: radioMaxKm*1000, color:'#00c896', weight:1.5,
-            fillColor:'#00c896', fillOpacity:0.08
-        }).addTo(mapaRadioInstancia);
-    }
-
-    // Pines de los lugares encontrados
-    var iconoLugar=L.divIcon({className:'',html:'<div class="marcador-lugar"></div>',iconSize:[14,14],iconAnchor:[7,12]});
-    var bounds=[[userLat,userLng]];
-    lugaresFiltrados.forEach(function(l){
-        if(l.lat==null||l.lng==null)return;
-        bounds.push([l.lat,l.lng]);
-        var marker=L.marker([l.lat,l.lng],{icon:iconoLugar}).addTo(mapaRadioInstancia);
-        var popupHtml='<div class="popup-mapa-nombre">'+getField(l,'nombre')+'</div>'+
-            '<div class="popup-mapa-dist">'+l.distancia.toFixed(1)+' km</div>'+
-            '<button class="popup-mapa-btn" data-lugar-id="'+l.id+'">'+t('mapa_ver_lugar')+'</button>';
-        marker.bindPopup(popupHtml);
-        marker.on('popupopen',function(){
-            var btn=document.querySelector('.popup-mapa-btn[data-lugar-id="'+l.id+'"]');
-            if(btn)btn.addEventListener('click',function(){mostrarFicha(l);});
-        });
-    });
-
-    if(bounds.length>1)mapaRadioInstancia.fitBounds(bounds,{padding:[30,30]});
-}
+function cambiarVista(v,btn){document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('activa');});document.querySelectorAll('.vista').forEach(function(vi){vi.classList.remove('activa');});btn.classList.add('activa');document.getElementById('vista-'+v).classList.add('activa');}
 function resetearPaso4(){listaRevelada=false;document.getElementById('btn-revelar').style.display='flex';document.getElementById('lista-lugares').innerHTML='';resetearTexto();}
 function revelarLista(){
     if(listaRevelada)return;listaRevelada=true;
