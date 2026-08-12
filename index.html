@@ -1002,37 +1002,30 @@
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast svg { width: 14px; height: 14px; stroke: var(--accent); stroke-width: 2.5; }
 
-        /* ─── SCROLL TRACK (indicador lateral) ─── */
-        .scroll-track {
+        /* ─── SCROLL HINT ─── */
+        .scroll-hint {
             position: fixed;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 130px;
-            border-radius: 3px;
-            background: rgba(255,255,255,0.08);
-            z-index: 60;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease, bottom 0.3s ease;
-        }
-        .scroll-track.show { opacity: 1; }
-        .scroll-track.pulse .scroll-thumb { animation: thumbPulse 1.1s ease-in-out 2; }
-        .scroll-thumb {
-            position: absolute;
             left: 50%;
-            top: 0;
-            width: 9px; height: 30px;
+            bottom: 20px;
             transform: translateX(-50%);
-            border-radius: 5px;
-            background: linear-gradient(180deg, #00e6aa, var(--accent-dim));
-            box-shadow: 0 0 10px rgba(0,200,150,0.55);
-            transition: top 0.12s linear;
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(0,200,150,0.14);
+            border: 1px solid rgba(0,200,150,0.3);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 60;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.35s ease, bottom 0.3s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
-        @keyframes thumbPulse {
-            0%,100% { box-shadow: 0 0 10px rgba(0,200,150,0.55); }
-            50%      { box-shadow: 0 0 18px rgba(0,200,150,0.95), 0 0 4px rgba(0,200,150,0.9); }
+        .scroll-hint.show {
+            opacity: 1;
+            animation: scrollHintBounce 1.6s ease-in-out infinite;
+        }
+        .scroll-hint svg { width: 18px; height: 18px; stroke: var(--accent); stroke-width: 2.2; }
+        @keyframes scrollHintBounce {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(6px); }
         }
 
         /* ─── MOBILE OVERRIDES ─── */
