@@ -16,7 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 
     <style>
         /* ─── TOKENS ─── */
@@ -687,11 +687,6 @@
         .vista.activa { display: block; }
 
         /* ─── MAPA (Leaflet) ─── */
-        #mapa-radio {
-            width: 100%; height: 340px; border-radius: var(--r-lg);
-            overflow: hidden; border: 1px solid var(--border-0);
-            background: var(--surface-0);
-        }
         #mapa-distancia {
             width: 100%; height: 220px; border-radius: var(--r-lg);
             overflow: hidden; border: 1px solid var(--border-0);
@@ -749,11 +744,11 @@
         /* ─── RANDOM BOX ─── */
         .random-wrap { display: flex; flex-direction: column; align-items: center; gap: 24px; }
         .random-box {
-            width: 100%; height: 190px;
+            width: 100%; height: 210px;
             background: var(--surface-0); border: 1px solid var(--border-0);
             border-radius: var(--r-lg);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px; text-align: center; position: relative; overflow: hidden;
+            padding: 24px; text-align: center; position: relative; overflow: hidden;
             transition: all 0.35s;
         }
         .random-box.active {
@@ -766,12 +761,15 @@
             50%      { box-shadow: 0 0 0 8px rgba(0,200,150,0.04), 0 10px 50px rgba(0,200,150,0.25); }
         }
         .scan-text {
-            font-family: 'Courier New', monospace; color: var(--text-lo);
-            font-size: 14px; letter-spacing: 1px; transition: opacity 0.12s, filter 0.2s;
+            font-family: 'JetBrains Mono', 'Courier New', monospace; color: var(--text-hi);
+            font-size: 19px; font-weight: 700; letter-spacing: 1.5px;
+            text-shadow: 0 0 16px rgba(0,200,150,0.35);
+            transition: opacity 0.12s, filter 0.2s;
         }
         .result-text {
-            position: absolute; font-size: 22px; font-weight: 900;
-            letter-spacing: -0.5px; color: var(--accent); padding: 0 20px;
+            position: absolute; font-size: 30px; font-weight: 900;
+            letter-spacing: -0.6px; line-height: 1.15; color: var(--accent); padding: 0 22px;
+            text-shadow: 0 0 28px rgba(0,200,150,0.45);
             opacity: 0; transform: scale(0.7);
             transition: all 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
         }
@@ -904,6 +902,27 @@
         #btn-back:hover { color: var(--accent); }
         #btn-back svg { width: 15px; height: 15px; }
         .back-bar.oculto { display: none; }
+
+        /* ─── SCROLL INDICATOR ─── */
+        .scroll-indicator {
+            position: fixed; top: 14px; right: 5px; bottom: 14px;
+            width: 3px; z-index: 60;
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+        .scroll-indicator.visible { opacity: 1; }
+        .scroll-indicator-thumb {
+            position: absolute; left: 0; width: 100%; top: 0;
+            background: linear-gradient(180deg, var(--accent), var(--accent-dim));
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(0,200,150,0.4);
+            transition: top 0.08s linear, height 0.2s ease;
+        }
+        @media (min-width: 481px) {
+            .scroll-indicator { right: calc(50% - 240px + 5px); }
+        }
 
         /* ─── META WEBVIEW GATE ─── */
         .meta-gate {
@@ -1361,6 +1380,10 @@
     </div>
 </div>
 
+<div class="scroll-indicator" id="scroll-indicator">
+    <div class="scroll-indicator-thumb" id="scroll-indicator-thumb"></div>
+</div>
+
 <script>
 var currentLang='es';
 var i18n={
@@ -1390,7 +1413,7 @@ var i18n={
         paso3_title:"¿Qué tan lejos querés ir?",paso3_subtitle:"Filtramos los lugares según la distancia.",
         dist_aquicerca:"Aquí cerca",dist_paseo:"A un paseo",dist_zonacercana:"Zona cercana",dist_mediadistancia:"Media distancia",dist_lejos:"Lejos",dist_todopais:"Todo el país",dist_sinlimite:"Sin límite",
         btn_buscar:"Buscar lugares",btn_buscando:"Buscando...",
-        paso4_title:"Destinos encontrados",aviso_filtro:"No encontramos opciones tan cercanas, así que ampliamos la búsqueda.",aviso_vacio:"No hay lugares disponibles.",tab_lista:"Lista Cercana",tab_random:"Búsqueda Aleatoria",tab_mapa:"Mapa",mapa_hint:"El círculo muestra el radio de búsqueda en línea recta — la distancia real manejando puede ser mayor.",mapa_tu_ubicacion:"Tu ubicación",mapa_ver_lugar:"Ver lugar",btn_revelar:"Descubrir Lugares Cercanos",scan_waiting:"Esperando consulta...",btn_sorprendeme:"SORPRÉNDEME",btn_analizando:"ANALIZANDO...",
+        paso4_title:"Destinos encontrados",aviso_filtro:"No encontramos opciones tan cercanas, así que ampliamos la búsqueda.",aviso_vacio:"No hay lugares disponibles.",tab_lista:"Lista Cercana",tab_random:"Búsqueda Aleatoria",mapa_hint:"El círculo muestra el radio de búsqueda en línea recta — la distancia real manejando puede ser mayor.",mapa_tu_ubicacion:"Tu ubicación",btn_revelar:"Descubrir Lugares Cercanos",scan_waiting:"Esperando consulta...",btn_sorprendeme:"SORPRÉNDEME",btn_analizando:"ANALIZANDO...",
         scan_1:"Analizando ubicación...",scan_2:"Filtrando categorías...",scan_3:"Calculando distancias...",scan_4:"Consultando base de datos...",scan_5:"Preparando sorpresa...",scan_6:"¡Destino seleccionado!",
         actividades:"Actividades",btn_maps:"Maps",btn_waze:"Waze",btn_otro:"Elegir otro lugar",btn_volver:"Volver",error_firebase:"Error al conectar con Firebase.",
         accesibilidad_yes:"Accesible en silla de ruedas",accesibilidad_limited:"Accesibilidad parcial",accesibilidad_no:"No accesible en silla de ruedas",sitio_web_label:"Sitio web",
@@ -1424,7 +1447,7 @@ var i18n={
         paso3_title:"How far do you want to go?",paso3_subtitle:"We filter places by distance.",
         dist_aquicerca:"Nearby",dist_paseo:"A short trip",dist_zonacercana:"Close area",dist_mediadistancia:"Mid-range",dist_lejos:"Far away",dist_todopais:"Whole country",dist_sinlimite:"No limit",
         btn_buscar:"Search places",btn_buscando:"Searching...",
-        paso4_title:"Destinations found",aviso_filtro:"No nearby options found, expanded search.",aviso_vacio:"No places available.",tab_lista:"Nearby List",tab_random:"Random Search",tab_mapa:"Map",mapa_hint:"The circle shows the straight-line search radius — the real driving distance may be longer.",mapa_tu_ubicacion:"Your location",mapa_ver_lugar:"View place",btn_revelar:"Discover Nearby Places",scan_waiting:"Waiting...",btn_sorprendeme:"SURPRISE ME",btn_analizando:"ANALYZING...",
+        paso4_title:"Destinations found",aviso_filtro:"No nearby options found, expanded search.",aviso_vacio:"No places available.",tab_lista:"Nearby List",tab_random:"Random Search",mapa_hint:"The circle shows the straight-line search radius — the real driving distance may be longer.",mapa_tu_ubicacion:"Your location",btn_revelar:"Discover Nearby Places",scan_waiting:"Waiting...",btn_sorprendeme:"SURPRISE ME",btn_analizando:"ANALYZING...",
         scan_1:"Analyzing location...",scan_2:"Filtering categories...",scan_3:"Calculating distances...",scan_4:"Querying database...",scan_5:"Preparing surprise...",scan_6:"Destination selected!",
         actividades:"Activities",btn_maps:"Maps",btn_waze:"Waze",btn_otro:"Choose another place",btn_volver:"Back",error_firebase:"Firebase error.",
         accesibilidad_yes:"Wheelchair accessible",accesibilidad_limited:"Partially accessible",accesibilidad_no:"Not wheelchair accessible",sitio_web_label:"Website",
@@ -1529,7 +1552,7 @@ function finishOnboarding(){
     el.addEventListener('touchend',function(e){if(!tr)return;tr=false;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){if(dx<0)nextOnbSlide();else if(currentSlide>0)goToSlide(currentSlide-1);}},{passive:true});
 })();
 
-function showApp(){document.getElementById('app-container').classList.add('visible');}
+function showApp(){document.getElementById('app-container').classList.add('visible');setTimeout(actualizarIndicadorScroll,300);}
 
 window.onload=function(){
     lucide.createIcons();
@@ -1647,8 +1670,44 @@ function mostrarPaso(n){
     if(n>1)pf.classList.add('moving');else pf.classList.remove('moving');
     lucide.createIcons();
     window.scrollTo(0,0);
+    setTimeout(actualizarIndicadorScroll,60);
 }
 function irAtras(){if(pasoActual>1)mostrarPaso(pasoActual-1);}
+
+// ─── Indicador de scroll (barrita lateral que muestra cuánto falta por bajar) ───
+var scrollIndicatorOcultarTimeout=null;
+function actualizarIndicadorScroll(){
+    var pantalla=document.querySelector('.pantalla.activa');
+    var indicador=document.getElementById('scroll-indicator');
+    var thumb=document.getElementById('scroll-indicator-thumb');
+    if(!pantalla||!indicador||!thumb)return;
+
+    var scrollable=pantalla.scrollHeight>pantalla.clientHeight+4; // +4 para tolerancia de redondeo
+    if(!scrollable){
+        indicador.classList.remove('visible');
+        return;
+    }
+
+    var trackAlto=indicador.clientHeight;
+    var proporcionVisible=pantalla.clientHeight/pantalla.scrollHeight;
+    var thumbAlto=Math.max(24,trackAlto*proporcionVisible);
+    var maxScroll=pantalla.scrollHeight-pantalla.clientHeight;
+    var progreso=maxScroll>0?(pantalla.scrollTop/maxScroll):0;
+    var thumbTop=progreso*(trackAlto-thumbAlto);
+
+    thumb.style.height=thumbAlto+'px';
+    thumb.style.top=thumbTop+'px';
+
+    indicador.classList.add('visible');
+    if(scrollIndicatorOcultarTimeout)clearTimeout(scrollIndicatorOcultarTimeout);
+    scrollIndicatorOcultarTimeout=setTimeout(function(){
+        indicador.classList.remove('visible');
+    },1600);
+}
+document.querySelectorAll('.pantalla').forEach(function(p){
+    p.addEventListener('scroll',actualizarIndicadorScroll,{passive:true});
+});
+window.addEventListener('resize',actualizarIndicadorScroll);
 
 function detectarNavegador(){var ua=navigator.userAgent||'';if(/iPad|iPhone|iPod/.test(ua))return'safari-ios';if(/Safari/.test(ua)&&!/Chrome/.test(ua))return'safari-mac';if(/Firefox/.test(ua))return'firefox';return'chrome';}
 
@@ -1865,6 +1924,7 @@ function procesarResultados(td,af,btnT){
 }
 
 function cambiarVista(v,btn){document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('activa');});document.querySelectorAll('.vista').forEach(function(vi){vi.classList.remove('activa');});btn.classList.add('activa');document.getElementById('vista-'+v).classList.add('activa');}
+
 function resetearPaso4(){listaRevelada=false;document.getElementById('btn-revelar').style.display='flex';document.getElementById('lista-lugares').innerHTML='';resetearTexto();}
 function revelarLista(){
     if(listaRevelada)return;listaRevelada=true;
